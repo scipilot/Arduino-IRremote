@@ -26,16 +26,21 @@ void  IRsend::sendNEC (unsigned long data,  int nbits)
 
 	// Header
 	mark(NEC_HDR_MARK);
-	space(NEC_HDR_SPACE);
+	
+	// Send specific heaser header for repeat. Also skip the data loop as << -1 is undefined and sometimes sends 1 byte.
+	if (data == REPEAT) space(NEC_RPT_SPACE);
+	else {
+		space(NEC_HDR_SPACE);
 
-	// Data
-	for (unsigned long  mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
-		if (data & mask) {
-			mark(NEC_BIT_MARK);
-			space(NEC_ONE_SPACE);
-		} else {
-			mark(NEC_BIT_MARK);
-			space(NEC_ZERO_SPACE);
+		// Data
+		for (unsigned long  mask = 1UL << (nbits - 1);  mask;  mask >>= 1) {
+			if (data & mask) {
+				mark(NEC_BIT_MARK);
+				space(NEC_ONE_SPACE);
+			} else {
+				mark(NEC_BIT_MARK);
+				space(NEC_ZERO_SPACE);
+			}
 		}
 	}
 
